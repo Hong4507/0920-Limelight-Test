@@ -5,10 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.DefaultCommand;
+import frc.robot.commands.Move;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,13 +22,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Limelight m_limelight = new Limelight();
+  private final Drive m_drive = new Drive();
 
-  private final DefaultCommand m_defaultcommand = new DefaultCommand(m_limelight);
+  private final Move m_moveCommand = new Move(m_limelight, m_drive);
+
+  private final Joystick m_driverJoystick = new Joystick(Constants.kDriverJoystickPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    m_drive.setDefaultCommand(new RunCommand(
+      () -> {m_drive.arcadeDrive
+        (m_driverJoystick.getRawAxis(Constants.leftStick_Y) * 0.7, m_driverJoystick.getRawAxis(Constants.rightStick_X) * 0.8);
+      }, m_drive));
   }
 
   /**
@@ -43,6 +54,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_defaultcommand;
+    return m_moveCommand;
   }
 }
