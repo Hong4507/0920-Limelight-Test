@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.Move;
+import frc.robot.commands.Straight;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 
 /**
@@ -25,6 +27,7 @@ public class RobotContainer {
   private final Drive m_drive = new Drive();
 
   private final Move m_moveCommand = new Move(m_limelight, m_drive);
+  private final Straight m_straightCommand = new Straight(m_limelight, m_drive);
 
   private final Joystick m_driverJoystick = new Joystick(Constants.kDriverJoystickPort);
 
@@ -54,6 +57,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_moveCommand;
+    return new ParallelCommandGroup(new Move(m_limelight, m_drive), new Straight(m_limelight, m_drive));
   }
 }
